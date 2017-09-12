@@ -6,17 +6,36 @@
   </ion-header>
 
   <ion-content>
-    <ion-list>
-        <button menuClose ion-item *ngFor="let p of afterLoginPages" (click)="openPage(p)" [hidden]="!loggedInUser">
-        {{p.title}}
-      </button>
-      <button menuClose ion-item *ngFor="let p of beforeLoginPages" (click)="openPage(p)" [hidden]="loggedInUser">
-        {{p.title}}
-      </button>
-      <button menuClose ion-item (click)="signOut()" *ngIf="loggedInUser">Sign Out</button>
+    <ion-list *ngIf="loggedInUser">
+      <button menuClose ion-item (click)="openPage('home')"><ion-icon name="calendar"></ion-icon> My Calendar</button>
+      <ion-item-group>
+        <ion-item (click)="manageLevel('profile')">
+          <ion-icon name="contact"></ion-icon> Profile Options
+          <ion-icon name="md-arrow-dropdown" item-right [hidden]="multiLevelKey['profile']"></ion-icon>
+          <ion-icon name="md-arrow-dropup" item-right [hidden]="!multiLevelKey['profile']"></ion-icon>
+        </ion-item>
+        <button menuClose ion-item [hidden]="!multiLevelKey['profile']" 
+          (click)="openPage('pendingrequest')" class="sub-menu"><ion-icon name="contact"></ion-icon> My Profile</button>
+        <button menuClose ion-item [hidden]="!multiLevelKey['profile']" 
+          (click)="openPage('resetp')" class="sub-menu"><ion-icon name="lock"></ion-icon> Change Password</button>
+      </ion-item-group>
+      <ion-item-group>
+        <ion-item (click)="manageLevel('appointment')">
+          <ion-icon name="timer"></ion-icon> Appointment
+          <ion-icon name="md-arrow-dropdown" item-right [hidden]="multiLevelKey['appointment']"></ion-icon>
+          <ion-icon name="md-arrow-dropup" item-right [hidden]="!multiLevelKey['appointment']"></ion-icon>
+        </ion-item>
+        <button menuClose ion-item [hidden]="!multiLevelKey['appointment']" (click)="openPage('sentrequest')" class="sub-menu"><ion-icon name="paper-plane"></ion-icon> Sent</button>
+        <button menuClose ion-item [hidden]="!multiLevelKey['appointment']" (click)="openPage('pendingrequest')" class="sub-menu"><ion-icon name="clipboard"></ion-icon> Recieved</button>
+        <button menuClose ion-item [hidden]="!multiLevelKey['appointment']" (click)="openPage('schedule')" class="sub-menu"><ion-icon name="watch"></ion-icon> Book An Appointment</button>
+      </ion-item-group>
+      <button menuClose ion-item (click)="signOut()"><ion-icon name="log-out"></ion-icon> Sign Out</button>
+    </ion-list>
+    <ion-list *ngIf="!loggedInUser">
+      <button menuClose ion-item (click)="openPage('signin')"><ion-icon name="log-in"></ion-icon> Sign In</button>
+      <button menuClose ion-item (click)="openPage('signup')"><ion-icon name="person-add"></ion-icon> Sign Up</button>
     </ion-list>
   </ion-content>
-
 </ion-menu>
 
 <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->

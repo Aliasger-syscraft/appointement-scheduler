@@ -15,6 +15,8 @@ import { ResetPassPage } from '../pages/resetp/resetp';
 import { DashboardPage } from '../pages/dashboard/dashboard';
 import { AppointmentContactPage } from '../pages/appointment/contacts/contacts';
 import { AppointmentPendingListPage } from '../pages/appointment/pending-list/pending-list';
+import { AppointmentSentListPage } from '../pages/appointment/sent-list/sent-list';
+
 
 @Component({
   templateUrl: 'app.html',
@@ -26,63 +28,58 @@ export class MyApp {
   rootPage: any = SignInPage;
   loggedInUser: any;
 
-  afterLoginPages: Array<{ title: string, component: any }>;
-  beforeLoginPages: Array<{ title: string, component: any }>;
+  keyWisePages: any;
+  multiLevelKey: any;
 
   constructor(public platform: Platform, public statusBar: StatusBar,
     public splashScreen: SplashScreen, private http: Http, private gb: GlobalServices,
     public events: Events) {
-    this.initializeApp();
+    this.initializeApp();   
 
+    this.keyWisePages = new Array();
+    this.keyWisePages["signin"] = SignInPage;
+    this.keyWisePages["signup"] = SignUpPage;
+    this.keyWisePages["home"] = DashboardPage;
+    this.keyWisePages["forgotp"] = ForgotPassPage;
+    this.keyWisePages["resetp"] = ResetPassPage;
+    this.keyWisePages["schedule"] = AppointmentContactPage;
+    this.keyWisePages["pendingrequest"] = AppointmentPendingListPage;
+    this.keyWisePages["sentrequest"] = AppointmentSentListPage ;    
 
-    this.afterLoginPages = [
-      /* { title: 'Home', component: HomePage },
-      { title: 'List', component: ListPage }, */
-      { title: 'Home', component: DashboardPage },
-      { title: 'Forgot Password', component: ForgotPassPage },
-      { title: 'Reset Password', component: ResetPassPage },
-      /* { title: 'Request Appointment', component: AppointmentRequestPage }, */
-      { title: 'Schedule of Others', component: AppointmentContactPage },
-      { title: 'Pending Requests', component: AppointmentPendingListPage },      
-    ];
-
-    this.beforeLoginPages = [
-      { title: 'Sign In', component: SignInPage },
-      { title: 'Sign Up', component: SignUpPage },
-    ];
+    this.multiLevelKey = new Array();
+    this.multiLevelKey["profile"] = false;
+    this.multiLevelKey["appointment"] = false;
 
     events.subscribe('user:login', () => {
       this.loggedInUser = localStorage.getItem('currentUser');
       if (this.loggedInUser) {
         this.nav.setRoot(DashboardPage);
+        //this.nav.setRoot(AppointmentContactPage); //Testing Purpose
       } else {
         this.nav.setRoot(SignInPage);
       }
     });
 
     this.loggedInUser = localStorage.getItem('currentUser');
-
-    // used for an example of ngFor and navigation
-    if (this.loggedInUser) {
-      this.rootPage = DashboardPage;
-    } else {
-      this.rootPage = SignInPage;
-    }
   }
 
   ngOnInit() {
-    this.http.post(this.gb.checkSessionUrl, {}).map(res => res.json())
-      .subscribe(r => {
-        this.gb.presentToast(r.message);
-        console.log(r.user);
-        if (r.IsSuccess) {
-          this.gb.setUserInstance(JSON.stringify(r.user));
-          this.nav.setRoot(DashboardPage);
-        } else {
-          this.gb.setUserInstance('');
-          this.nav.setRoot(SignInPage);
-        }
-      })
+    if (this.loggedInUser) {
+      this.nav.setRoot(DashboardPage);
+    } else {
+      this.http.post(this.gb.checkSessionUrl, {}).map(res => res.json())
+        .subscribe(r => {
+          this.gb.presentToast(r.message);
+          console.log(r.user);
+          if (r.IsSuccess) {
+            this.gb.setUserInstance(JSON.stringify(r.user));
+            this.nav.setRoot(DashboardPage);
+          } else {
+            this.gb.setUserInstance('');
+            this.nav.setRoot(SignInPage);
+          }
+        })
+    }
   }
 
   initializeApp() {
@@ -94,10 +91,22 @@ export class MyApp {
     });
   }
 
-  openPage(page) {
+  /* openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
     this.nav.setRoot(page.component);
+  } */
+
+  openPage(pageKey) {
+    this.nav.setRoot(this.keyWisePages[pageKey]);
+  }
+
+  manageLevel(menuKey){
+    var currVal = this.multiLevelKey[menuKey];
+    for(var i in this.multiLevelKey){
+      this.multiLevelKey[i] = false;
+    }
+    this.multiLevelKey[menuKey] = !currVal;
   }
 
   signOut() {
@@ -106,7 +115,8 @@ export class MyApp {
         this.gb.presentToast(r.message);
         if (r.IsSuccess) {
           this.gb.setUserInstance('');
-          this.nav.setRoot(SignInPage);
+          this.events.publish('user:login');
+          //this.nav.setRoot(SignInPage);
         }
       })
   }

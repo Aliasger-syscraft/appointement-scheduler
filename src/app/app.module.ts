@@ -3,6 +3,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { NgCalendarModule  } from 'ionic2-calendar';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -18,7 +19,8 @@ import { AppointmentSchedulePage } from '../pages/appointment/schedule/schedule'
 import { AppointmentContactPage } from '../pages/appointment/contacts/contacts';
 import { AppointmentPendingListPage } from '../pages/appointment/pending-list/pending-list';
 import { AppointmentPendingDetailPage } from '../pages/appointment/pending-details/pending-details';
-
+import { AppointmentSentListPage } from '../pages/appointment/sent-list/sent-list';
+import { AppointmentSentDetailPage } from '../pages/appointment/sent-details/sent-details';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -37,13 +39,16 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     AppointmentSchedulePage,
     AppointmentContactPage,
     AppointmentPendingListPage,
-    AppointmentPendingDetailPage
+    AppointmentPendingDetailPage,
+    AppointmentSentListPage,
+    AppointmentSentDetailPage
   ],
   imports: [
     BrowserModule,
     HttpModule,
     NgCalendarModule,
     IonicModule.forRoot(MyApp),
+    BsDropdownModule.forRoot(MyApp),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -59,7 +64,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     AppointmentSchedulePage,
     AppointmentContactPage,
     AppointmentPendingListPage,
-    AppointmentPendingDetailPage
+    AppointmentPendingDetailPage,
+    AppointmentSentListPage,
+    AppointmentSentDetailPage
   ],
   providers: [
     StatusBar,
